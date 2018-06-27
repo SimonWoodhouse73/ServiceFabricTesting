@@ -1,0 +1,231 @@
+// ***********************************************************************
+// Assembly         : Api
+// Author           : markco
+// Created          : 05-18-2018
+//
+// Last Modified By : markco
+// Last Modified On : 05-18-2018
+// ***********************************************************************
+// <copyright file="InsolvencyOrderHistoriesRepository.cs" company="Callcredit Information Group.">
+// Copyright (c) 2018 Callcredit Information Group. All rights reserved.
+// </copyright>
+// <summary>The repository for InsolvencyOrderAddresses</summary>
+// ***********************************************************************
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Api.EntityFramework.Entities;
+using Api.Telemetry;
+using AutoMapper;
+using Callcredit.Domain.Insolvencies.Models;
+using Callcredit.Domain.Insolvencies.Repositories;
+using Callcredit.Domain.Repositories;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.EntityFrameworkCore;
+using Validation;
+
+namespace Api.EntityFramework.Repositories
+{
+    /// <summary>
+    /// An entity framework implementation of <see cref="IInsolvencyOrderHistoriesRepository{TModel, TEntity}"/> , the repository
+    /// searches against <see cref="InsolvencyOrderHistoryEntity"/> entities mapped to the database view and returns a mapped
+    /// <see cref="InsolvencyOrderHistoryModel"/> data.
+    /// </summary>
+    public class InsolvencyOrderHistoriesRepository : IInsolvencyOrderHistoriesRepository<InsolvencyOrderHistoryModel, InsolvencyOrderHistoryEntity>
+    {
+        /// <summary>
+        /// The context
+        /// </summary>
+        private readonly DatabaseContext context;
+        /// <summary>
+        /// The telemetry client
+        /// </summary>
+        private readonly ITelemetryClient telemetryClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InsolvencyOrderHistoriesRepository"/> class.
+        /// </summary>
+        /// <param name="context">An instance of <see cref="DatabaseContext"/></param>
+        /// <param name="telemetryClient">The <see cref="TelemetryClient" /> used to log custom telemetry requests.</param>
+        public InsolvencyOrderHistoriesRepository(
+            DatabaseContext context,
+            ITelemetryClient telemetryClient)
+        {
+            Requires.NotNull(context, nameof(context));
+            Requires.NotNull(telemetryClient, nameof(telemetryClient));
+
+            this.context = context;
+            this.telemetryClient = telemetryClient;
+        }
+
+        /// <summary>
+        /// count as an asynchronous operation.
+        /// </summary>
+        /// <returns>Task&lt;System.Int32&gt;.</returns>
+        public async Task<int> CountAsync()
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryCountHistories))
+            {
+                return await GetBaseData().CountAsync();
+            }
+        }
+
+        /// <summary>
+        /// count by as an asynchronous operation.
+        /// </summary>
+        /// <typeparam name="T">Type of the keyValue</typeparam>
+        /// <param name="keyValue">Expected value of the key which is being filtered on.</param>
+        /// <param name="keyToSelectBy">The key which is being filtered by.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;System.Int32&gt;. containing count of records found</returns>
+        public async Task<int> CountByAsync<T>(T keyValue, Expression<Func<InsolvencyOrderHistoryEntity, T>> keyToSelectBy, params string[] includes)
+        {
+            var searchTerms = new ParameterisedSearchTerms<InsolvencyOrderHistoryEntity>();
+            searchTerms.AddParameterisedSearchItem(keyValue, keyToSelectBy);
+
+            return await CountByAsync(searchTerms, includes);
+        }
+
+        /// <summary>
+        /// count by as an asynchronous operation.
+        /// </summary>
+        /// <param name="keysToSelectBy">The <see cref="ParameterisedSearchTerms{InsolvencyOrderHistoriesEntity}"/>containing the search terms.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;System.Int32&gt;. containing count of records found</returns>
+        public async Task<int> CountByAsync(ParameterisedSearchTerms<InsolvencyOrderHistoryEntity> keysToSelectBy, params string[] includes)
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryCountHistoriesBy))
+            {
+                var result =
+                    await GetBaseData(includes)
+                    .Where(keysToSelectBy)
+                    .CountAsync();
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// get all as an asynchronous operation.
+        /// </summary>
+        /// <param name="pageInformation">The <see cref="PageInformation"/>containing the request page, and page size.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;IEnumerable&lt;InsolvencyOrderHistoriesModel&gt;&gt;. containing set of InsolvencyOrderHistories data</returns>
+        public async Task<IEnumerable<InsolvencyOrderHistoryModel>> GetAllAsync(PageInformation pageInformation, params string[] includes)
+        {
+            Requires.NotNull(pageInformation, nameof(pageInformation));
+
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryGetAllHistories))
+            {
+                var data = await GetBaseData(includes)
+                    .OrderBy(x => x.InsolvencyOrderHistoryId)
+                    .Page(pageInformation)
+                    .ToListAsync();
+
+                return Mapper.Map<IEnumerable<InsolvencyOrderHistoryModel>>(data);
+            }
+        }
+
+        /// <summary>
+        /// get result by as an asynchronous operation.
+        /// </summary>
+        /// <typeparam name="T">Type of the keyValue</typeparam>
+        /// <param name="keyValue">Expected value of the key which is being filtered on.</param>
+        /// <param name="keyToSelectBy">The key which is being filtered by.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;InsolvencyOrderHistoriesModel&gt;. containing the InsolvencyOrderHistories model</returns>
+        public async Task<InsolvencyOrderHistoryModel> GetResultByAsync<T>(T keyValue, Expression<Func<InsolvencyOrderHistoryEntity, T>> keyToSelectBy, params string[] includes)
+        {
+            var searchTerms = new ParameterisedSearchTerms<InsolvencyOrderHistoryEntity>();
+            searchTerms.AddParameterisedSearchItem(keyValue, keyToSelectBy);
+
+            return await GetResultByAsync(searchTerms, includes);
+        }
+
+        /// <summary>
+        /// get result by as an asynchronous operation.
+        /// </summary>
+        /// <param name="keysToSelectBy">The <see cref="ParameterisedSearchTerms{InsolvencyOrderAddressEntity}"/>containing the search terms.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;InsolvencyOrderHistoriesModel&gt;. containing the InsolvencyOrderHistory model</returns>
+        public async Task<InsolvencyOrderHistoryModel> GetResultByAsync(ParameterisedSearchTerms<InsolvencyOrderHistoryEntity> keysToSelectBy, params string[] includes)
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryGetHistoryBy))
+            {
+                var data = await GetBaseData(includes).Where(keysToSelectBy).FirstOrDefaultAsync();
+                var result = Mapper.Map<InsolvencyOrderHistoryModel>(data);
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// get results by as an asynchronous operation.
+        /// </summary>
+        /// <typeparam name="T">Type of the keyValue</typeparam>
+        /// <param name="keyValue">Expected value of the key which is being filtered on.</param>
+        /// <param name="keyToSelectBy">The key which is being filtered by.</param>
+        /// <param name="pageInformation">The <see cref="PageInformation"/>containing the request page, and page size.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;IEnumerable&lt;InsolvencyOrderHistoryModel&gt;&gt;. containing a set of insolvencyorderhistories data</returns>
+        public async Task<IEnumerable<InsolvencyOrderHistoryModel>> GetResultsByAsync<T>(
+            T keyValue,
+            Expression<Func<InsolvencyOrderHistoryEntity, T>> keyToSelectBy,
+            PageInformation pageInformation,
+            params string[] includes)
+        {
+            Requires.NotNull(pageInformation, nameof(pageInformation));
+
+            var searchTerms = new ParameterisedSearchTerms<InsolvencyOrderHistoryEntity>();
+            searchTerms.AddParameterisedSearchItem(keyValue, keyToSelectBy);
+
+            return await GetResultsByAsync(searchTerms, pageInformation, includes);
+        }
+
+        /// <summary>
+        /// get results by as an asynchronous operation.
+        /// </summary>
+        /// <param name="keysToSelectBy">The <see cref="ParameterisedSearchTerms{DisputeEntity}"/>containing the search terms.</param>
+        /// <param name="pageInformation">The <see cref="PageInformation"/>containing the request page, and page size.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;IEnumerable&lt;InsolvencyOrderHistoryModel&gt;&gt;. containing set of InsolvencyOrderHistory data</returns>
+        public async Task<IEnumerable<InsolvencyOrderHistoryModel>> GetResultsByAsync(
+            ParameterisedSearchTerms<InsolvencyOrderHistoryEntity> keysToSelectBy,
+            PageInformation pageInformation,
+            params string[] includes)
+        {
+            Requires.NotNull(pageInformation, nameof(pageInformation));
+
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryGetHistoriesBy))
+            {
+                var data =
+                    await GetBaseData(includes)
+                    .Where(keysToSelectBy)
+                    .OrderBy(x => x.InsolvencyOrderHistoryId)
+                    .Page(pageInformation)
+                    .ToListAsync();
+
+                var result = Mapper.Map<IEnumerable<InsolvencyOrderHistoryModel>>(data);
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Provide implementation for retrieving InsolvencyOrderHistory data.
+        /// </summary>
+        /// <param name="includes">link records to include.</param>
+        /// <returns><see cref="IQueryable{InsolvencyOrderHistoryEntity}"/> containing queryable set of InsolvencyOrderHistory data.</returns>
+        protected IQueryable<InsolvencyOrderHistoryEntity> GetBaseData(params string[] includes)
+        {
+            var baseData = context.InsolvencyOrderHistoryEntities.AsNoTracking().AsQueryable();
+            baseData = baseData.Include(i => i.Court);
+            baseData = baseData.Include(i => i.InsolvencyOrderStatus);
+
+            return baseData;
+        }
+    }
+}
