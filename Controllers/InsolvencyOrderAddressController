@@ -1,0 +1,163 @@
+using System.Linq;
+using System.Threading.Tasks;
+using Api.EntityFramework.Entities;
+using Api.Telemetry;
+using Callcredit.AspNetCore.ProblemJson;
+using Callcredit.Domain.Insolvencies.Models;
+using Callcredit.Domain.Insolvencies.Repositories;
+using Callcredit.Domain.Insolvencies.Resources;
+using Callcredit.RESTful.DataAssets;
+using Callcredit.RESTful.Services.Hal;
+using Callcredit.RESTful.Services.Includes;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Validation;
+
+namespace Api.Controllers
+{
+    /// <summary>
+    /// Addresses controller
+    /// </summary>
+    [Produces("application/hal+json")]
+    [Route("api/uk")]
+    [Authorize(Policy = "Query")]
+    public class InsolvencyOrderAddressesController : Controller
+    {
+        private readonly IDataAccessCradle<InsolvencyOrderAddressModel> cradle;
+        private readonly IInsolvencyOrderAddressesRepository<InsolvencyOrderAddressModel, InsolvencyOrderAddressEntity> addressesRepository;
+        private readonly IIncludeReader includeReader;
+        private readonly IPageInformationProvider pageInformationProvider;
+        private readonly IHalFormatter<InsolvencyOrderAddressModel> addressFormatter;
+        private readonly IHalCollectionFormatter<InsolvencyOrderAddressModel> addressCollectionFormatter;
+        private readonly ITelemetryClient telemetryClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InsolvencyOrderAddressesController"/> class.
+        /// </summary>
+        /// <param name="cradle">CallCredit data cradle</param>
+        /// <param name="addressesRepository">Address Repository object</param>
+        /// <param name="includeReader">CallCredit Url include parser for reading include options</param>
+        /// <param name="pageInformationProvider">Determines how many pages are included in a result set</param>
+        /// <param name="addressFormatter">Creates HAL formatted JSon for Addresses</param>
+        /// <param name="addressCollectionFormatter">Creates HAL formatted collection of addresses</param>
+        /// <param name="telemetryClient">
+        /// The <see cref="TelemetryClient" /> used to log custom telemetry requests.
+        /// </param>
+        public InsolvencyOrderAddressesController(
+            IDataAccessCradle<InsolvencyOrderAddressModel> cradle,
+            IInsolvencyOrderAddressesRepository<InsolvencyOrderAddressModel, InsolvencyOrderAddressEntity> addressesRepository,
+            IIncludeReader includeReader,
+            IPageInformationProvider pageInformationProvider,
+            IHalFormatter<InsolvencyOrderAddressModel> addressFormatter,
+            IHalCollectionFormatter<InsolvencyOrderAddressModel> addressCollectionFormatter,
+            ITelemetryClient telemetryClient)
+        {
+            Requires.NotNull(cradle, nameof(cradle));
+            Requires.NotNull(addressesRepository, nameof(addressesRepository));
+            Requires.NotNull(includeReader, nameof(includeReader));
+            Requires.NotNull(pageInformationProvider, nameof(pageInformationProvider));
+            Requires.NotNull(addressFormatter, nameof(addressFormatter));
+            Requires.NotNull(addressCollectionFormatter, nameof(addressCollectionFormatter));
+            Requires.NotNull(telemetryClient, nameof(telemetryClient));
+
+            this.cradle = cradle;
+            this.addressesRepository = addressesRepository;
+            this.includeReader = includeReader;
+            this.pageInformationProvider = pageInformationProvider;
+            this.addressFormatter = addressFormatter;
+            this.addressCollectionFormatter = addressCollectionFormatter;
+            this.telemetryClient = telemetryClient;
+        }
+
+        /// <summary>
+        /// Retrieves a paged collection of all Addresses for a Insolvency record.records
+        /// </summary>
+        /// <remarks>
+        /// Available Query Strings :::
+        ///
+        /// 'page' - The page query string is used to select the page index of results to view. For example: ...?page=5
+        /// </remarks>
+        /// <param name="insolvencyOrderId">The unique business key of the insolvency.</param>
+        /// <returns>A paged collections of Addresses.</returns>
+        /// <response code="200">Request fulfilled. The message body contains the page collection of resources.</response>
+        /// <response code="204">No information to send back. The HTTP header will not be returned and message body will be empty.</response>
+        /// <response code="400">Bad request. The message body will contain details for the validation error that occurred.</response>
+        /// <response code="401">Unauthorized. The message body will contain details for the authentication error that occurred.</response>
+        /// <response code="403">Forbidden. The message body will contain error details indicating that the client is not authorised to perform the operation.</response>
+        /// <response code="404">Not Found. The message body will contain error details indicating that the resource was not found.</response>
+        /// <response code="405">Not allowed. The message body will contain error details indicating that the resource does not support verb.</response>
+        [ProducesResponseType(typeof(InsolvencyOrderAddressModel), 200)]
+        [ProducesResponseType(typeof(InsolvencyOrderAddressModel), 204)]
+        [ProducesResponseType(typeof(Problem), 400)]
+        [ProducesResponseType(typeof(Problem), 401)]
+        [ProducesResponseType(typeof(Problem), 403)]
+        [ProducesResponseType(typeof(Problem), 404)]
+        [ProducesResponseType(typeof(Problem), 405)]
+        [HttpGet("mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-addresses", Name = DomainResources.InsolvencyOrderAddresses)]
+        [ParameterValidation("InsolvencyOrderId")]
+        [Authorize(Policy = "Query")]
+        public async Task<IActionResult> GetAddressesByInsolvencyIdAsync(int insolvencyOrderId)
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(Telemetry.TelemetryLabels.GetAddressesForInsolvency))
+            {
+                var includes = includeReader.GetIncludes().ToArray();
+
+                var pageInformation = pageInformationProvider.GetPageInformation();
+
+                var data = await cradle.GetPagedDataSetAsync(
+                    () => addressesRepository.GetResultsByAsync(insolvencyOrderId, entity => entity.InsolvencyOrderId, pageInformation, includes),
+                    () => addressesRepository.CountByAsync(insolvencyOrderId, entity => entity.InsolvencyOrderId, includes));
+
+                var halResponse = addressCollectionFormatter.FormatForHal(data);
+
+                return Ok(halResponse);
+            }
+        }
+
+        /// <summary>
+        /// Provides the ability to get a single address by its unique business key and associated Insolvency business key.
+        /// </summary>
+        /// <remarks>
+        /// Available Query Strings :::
+        ///
+        /// 'include' - a string value specifying an embedded resource to include. Can be specified as many times as needed. Example : ?include=myproperty
+        /// </remarks>
+        /// <param name="insolvencyOrderAddressId">The unique business key of the address.</param>
+        /// <returns>A paged collections of resources from the entire resource collection.</returns>
+        /// <response code="200">The message body contain a representation of the paged collections of resources.</response>
+        /// <response code="204">A Content-Type HTTP header shall not be returned. The message body shall be empty.</response>
+        /// <response code="400">The message body shall contain error details including the validation errors that occurred.</response>
+        /// <response code="401">The message body shall contain error details indicating that the client cannot be authenticated.</response>
+        /// <response code="403">The message body shall contain error details indicating that the client is not authorised to perform operation against the resource.</response>
+        /// <response code="404">The message body shall contain error details indicating that the resource was not found.</response>
+        /// <response code="405">The message body shall contain error details indicating that the resource does not support verb.</response>
+        [ProducesResponseType(typeof(InsolvencyOrderAddressModel), 200)]
+        [ProducesResponseType(typeof(InsolvencyOrderAddressModel), 204)]
+        [ProducesResponseType(typeof(Problem), 400)]
+        [ProducesResponseType(typeof(Problem), 401)]
+        [ProducesResponseType(typeof(Problem), 403)]
+        [ProducesResponseType(typeof(Problem), 404)]
+        [ProducesResponseType(typeof(Problem), 405)]
+        [HttpGet("mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-addresses/{InsolvencyOrderAddressId}", Name = DomainResources.InsolvencyOrderAddress)]
+        [ParameterValidation("InsolvencyOrderId")]
+        [ParameterValidation("InsolvencyOrderAddressId")]
+        [Authorize(Policy = "Query")]
+        public async Task<IActionResult> GetAddressesByAddressId(int insolvencyOrderAddressId)
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(Telemetry.TelemetryLabels.GetAddress))
+            {
+                var includes = includeReader.GetIncludes().ToArray();
+
+                var data = await cradle.GetItemAsync(
+                    () =>
+                    addressesRepository.GetResultByAsync(insolvencyOrderAddressId, address => address.InsolvencyOrderAddressId, includes));
+
+                var halResponse = addressFormatter.FormatForHal(data);
+
+                return Ok(halResponse);
+            }
+        }
+    }
+}
