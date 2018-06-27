@@ -1,0 +1,229 @@
+// ***********************************************************************
+// Assembly         : Api
+// Author           : markco
+// Created          : 05-18-2018
+//
+// Last Modified By : markco
+// Last Modified On : 05-18-2018
+// ***********************************************************************
+// <copyright file="InsolvencyOrderPersonsRepository.cs" company="Callcredit Information Group.">
+// Copyright (c) 2018 Callcredit Information Group. All rights reserved.
+// </copyright>
+// <summary>The repository for InsolvencyOrderPersons</summary>
+// ***********************************************************************
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Api.EntityFramework.Entities;
+using Api.Telemetry;
+using AutoMapper;
+using Callcredit.Domain.Insolvencies.Models;
+using Callcredit.Domain.Insolvencies.Repositories;
+using Callcredit.Domain.Repositories;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.EntityFrameworkCore;
+using Validation;
+
+namespace Api.EntityFramework.Repositories
+{
+    /// <summary>
+    /// An entity framework implementation of <see cref="IInsolvencyOrderPersonsRepository{TModel, TEntity}"/> , the repository
+    /// searches against <see cref="InsolvencyOrderPersonEntity"/> entities mapped to the database view and returns a mapped
+    /// <see cref="InsolvencyOrderPersonModel"/> data.
+    /// </summary>
+    public class InsolvencyOrderPersonsRepository : IInsolvencyOrderPersonsRepository<InsolvencyOrderPersonModel, InsolvencyOrderPersonEntity>
+    {
+        /// <summary>
+        /// The context
+        /// </summary>
+        private readonly DatabaseContext context;
+
+        /// <summary>
+        /// The telemetry client
+        /// </summary>
+        private readonly ITelemetryClient telemetryClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InsolvencyOrderPersonsRepository"/> class.
+        /// </summary>
+        /// <param name="context">An instance of <see cref="DatabaseContext"/></param>
+        /// <param name="telemetryClient">The <see cref="ITelemetryClient" /> used to log custom telemetry requests.</param>
+        public InsolvencyOrderPersonsRepository(
+            DatabaseContext context,
+            ITelemetryClient telemetryClient)
+        {
+            Requires.NotNull(context, nameof(context));
+            Requires.NotNull(telemetryClient, nameof(telemetryClient));
+
+            this.context = context;
+            this.telemetryClient = telemetryClient;
+        }
+
+        /// <summary>
+        /// count as an asynchronous operation.
+        /// </summary>
+        /// <returns>Task&lt;System.Int32&gt;.</returns>
+        public async Task<int> CountAsync()
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryCountDisputes))
+            {
+                return await GetBaseData().CountAsync();
+            }
+        }
+
+        /// <summary>
+        /// count by as an asynchronous operation.
+        /// </summary>
+        /// <typeparam name="T">Type of the keyValue</typeparam>
+        /// <param name="keyValue">Expected value of the key which is being filtered on.</param>
+        /// <param name="keyToSelectBy">The key which is being filtered by.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;System.Int32&gt;. containing count of records found</returns>
+        public async Task<int> CountByAsync<T>(T keyValue, Expression<Func<InsolvencyOrderPersonEntity, T>> keyToSelectBy, params string[] includes)
+        {
+            var searchTerms = new ParameterisedSearchTerms<InsolvencyOrderPersonEntity>();
+            searchTerms.AddParameterisedSearchItem(keyValue, keyToSelectBy);
+
+            return await CountByAsync(searchTerms, includes);
+        }
+
+        /// <summary>
+        /// count by as an asynchronous operation.
+        /// </summary>
+        /// <param name="keysToSelectBy">The <see cref="ParameterisedSearchTerms{InsolvencyOrderPersonEntity}"/>containing the search terms.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;System.Int32&gt;. containing count of records found</returns>
+        public async Task<int> CountByAsync(ParameterisedSearchTerms<InsolvencyOrderPersonEntity> keysToSelectBy, params string[] includes)
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryCountPersonsBy))
+            {
+                var result =
+                    await GetBaseData(includes)
+                    .Where(keysToSelectBy)
+                    .CountAsync();
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// get all as an asynchronous operation.
+        /// </summary>
+        /// <param name="pageInformation">The <see cref="PageInformation"/>containing the request page, and page size.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;IEnumerable&lt;InsolvencyOrderHistoriesModel&gt;&gt;. containing set of InsolvencyOrderHistories data</returns>
+        public async Task<IEnumerable<InsolvencyOrderPersonModel>> GetAllAsync(PageInformation pageInformation, params string[] includes)
+        {
+            Requires.NotNull(pageInformation, nameof(pageInformation));
+
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryGetAllPersons))
+            {
+                var data = await GetBaseData(includes)
+                    .OrderBy(x => x.InsolvencyOrderPersonId)
+                    .Page(pageInformation)
+                    .ToListAsync();
+
+                return Mapper.Map<IEnumerable<InsolvencyOrderPersonModel>>(data);
+            }
+        }
+
+        /// <summary>
+        /// get result by as an asynchronous operation.
+        /// </summary>
+        /// <typeparam name="T">Type of the keyValue</typeparam>
+        /// <param name="keyValue">Expected value of the key which is being filtered on.</param>
+        /// <param name="keyToSelectBy">The key which is being filtered by.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;InsolvencyOrderPersonModel&gt;. containing the InsolvencyOrderPerson model</returns>
+        public async Task<InsolvencyOrderPersonModel> GetResultByAsync<T>(T keyValue, Expression<Func<InsolvencyOrderPersonEntity, T>> keyToSelectBy, params string[] includes)
+        {
+            var searchTerms = new ParameterisedSearchTerms<InsolvencyOrderPersonEntity>();
+            searchTerms.AddParameterisedSearchItem(keyValue, keyToSelectBy);
+
+            return await GetResultByAsync(searchTerms, includes);
+        }
+
+        /// <summary>
+        /// get result by as an asynchronous operation.
+        /// </summary>
+        /// <param name="keysToSelectBy">The <see cref="ParameterisedSearchTerms{InsolvencyOrderPersonEntity}"/>containing the search terms.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;InsolvencyOrderPersonModel&gt;.</returns>
+        public async Task<InsolvencyOrderPersonModel> GetResultByAsync(ParameterisedSearchTerms<InsolvencyOrderPersonEntity> keysToSelectBy, params string[] includes)
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryGetPersonBy))
+            {
+                var data = await GetBaseData(includes).Where(keysToSelectBy).FirstOrDefaultAsync();
+                var result = Mapper.Map<InsolvencyOrderPersonModel>(data);
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// get result by as an asynchronous operation.
+        /// </summary>
+        /// <typeparam name="T">Type of the keyValue</typeparam>
+        /// <param name="keyValue">Expected value of the key which is being filtered on.</param>
+        /// <param name="keyToSelectBy">The key which is being filtered by.</param>
+        /// <param name="pageInformation">The <see cref="PageInformation"/>containing the request page, and page size.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;InsolvencyOrderPersonModel&gt;. containing the InsolvencyOrderPerson model</returns>
+        public async Task<IEnumerable<InsolvencyOrderPersonModel>> GetResultsByAsync<T>(
+            T keyValue,
+            Expression<Func<InsolvencyOrderPersonEntity, T>> keyToSelectBy,
+            PageInformation pageInformation,
+            params string[] includes)
+        {
+            Requires.NotNull(pageInformation, nameof(pageInformation));
+
+            var searchTerms = new ParameterisedSearchTerms<InsolvencyOrderPersonEntity>();
+            searchTerms.AddParameterisedSearchItem(keyValue, keyToSelectBy);
+
+            return await GetResultsByAsync(searchTerms, pageInformation, includes);
+        }
+
+        /// <summary>
+        /// get results by as an asynchronous operation.
+        /// </summary>
+        /// <param name="keysToSelectBy">The <see cref="ParameterisedSearchTerms{InsolvencyOrderPersonEntity}"/>containing the search terms.</param>
+        /// <param name="pageInformation">The <see cref="PageInformation"/>containing the request page, and page size.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;IEnumerable&lt;InsolvencyOrderPersonModel&gt;&gt;. containing set of InsolvencyOrderPerson data</returns>
+        public async Task<IEnumerable<InsolvencyOrderPersonModel>> GetResultsByAsync(
+            ParameterisedSearchTerms<InsolvencyOrderPersonEntity> keysToSelectBy,
+            PageInformation pageInformation,
+            params string[] includes)
+        {
+            Requires.NotNull(pageInformation, nameof(pageInformation));
+
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryGetPersonsBy))
+            {
+                var data =
+                    await GetBaseData(includes)
+                    .Where(keysToSelectBy)
+                    .OrderBy(x => x.InsolvencyOrderPersonId)
+                    .Page(pageInformation)
+                    .ToListAsync();
+
+                var result = Mapper.Map<IEnumerable<InsolvencyOrderPersonModel>>(data);
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Provide implementation for retrieving InsolvencyOrderPerson data.
+        /// </summary>
+        /// <param name="includes">link records to include.</param>
+        /// <returns><see cref="IQueryable{InsolvencyOrderPersonEntity}"/> containing queryable set of InsolvencyOrderPerson data.</returns>
+        protected IQueryable<InsolvencyOrderPersonEntity> GetBaseData(params string[] includes)
+        {
+            var baseData = context.InsolvencyOrderPersonEntities.AsNoTracking().AsQueryable();
+
+            return baseData;
+        }
+    }
+}

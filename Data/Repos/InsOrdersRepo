@@ -1,0 +1,333 @@
+// ***********************************************************************
+// Assembly         : Api
+// Author           : markco
+// Created          : 05-18-2018
+//
+// Last Modified By : markco
+// Last Modified On : 05-18-2018
+// ***********************************************************************
+// <copyright file="InsolvencyOrdersRepository.cs" company="Callcredit Information Group.">
+// Copyright (c) 2018 Callcredit Information Group. All rights reserved.
+// </copyright>
+// <summary>The repository for InsolvencyOrders</summary>
+// ***********************************************************************
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Api.EntityFramework.Entities;
+using Api.Telemetry;
+using AutoMapper;
+using Callcredit.Domain.Insolvencies.Filters.Dispute;
+using Callcredit.Domain.Insolvencies.Filters.InsolvencyOrder;
+using Callcredit.Domain.Insolvencies.Models;
+using Callcredit.Domain.Insolvencies.Repositories;
+using Callcredit.Domain.Insolvencies.Resources;
+using Callcredit.Domain.Repositories;
+using Callcredit.FirstInFirstOutFiltering;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.EntityFrameworkCore;
+using Validation;
+
+namespace Api.EntityFramework.Repositories
+{
+    /// <summary>
+    /// An entity framework implementation of <see cref="IInsolvencyOrdersRepository{TModel, TEntity}"/> , the repository
+    /// searches against <see cref="InsolvencyOrderEntity"/> entities mapped to the database view and returns a mapped
+    /// <see cref="InsolvencyOrderModel"/> data.
+    /// </summary>
+    public class InsolvencyOrdersRepository : IInsolvencyOrdersRepository<InsolvencyOrderModel, InsolvencyOrderEntity>
+    {
+        /// <summary>
+        /// The context
+        /// </summary>
+        private readonly DatabaseContext context;
+
+        /// <summary>
+        /// The filtered base insolvencies data
+        /// </summary>
+        private readonly IFilteredBaseData<IInsolvencyOrderFilterBase> filteredBaseInsolvenciesData;
+
+        /// <summary>
+        /// The filtered base dispute data
+        /// </summary>
+        private readonly IFilteredBaseData<IDisputeFilterBase> filteredBaseDisputeData;
+
+        /// <summary>
+        /// The telemetry client
+        /// </summary>
+        private readonly ITelemetryClient telemetryClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InsolvencyOrdersRepository"/> class.
+        /// </summary>
+        /// <param name="context">An instance of <see cref="DatabaseContext"/></param>
+        /// <param name="filteredBaseInsolvenciesData">An instance of <see cref="IFilteredBaseData{IInsolvencyOrderFilterBase}"/></param>
+        /// <param name="filteredBaseDisputeData">An instance of <see cref="IFilteredBaseData{IDisputeFilterBase}"/></param>
+        /// <param name="telemetryClient">The <see cref="ITelemetryClient" /> used to log custom telemetry requests.</param>
+        public InsolvencyOrdersRepository(
+            DatabaseContext context,
+            IFilteredBaseData<IInsolvencyOrderFilterBase> filteredBaseInsolvenciesData,
+            IFilteredBaseData<IDisputeFilterBase> filteredBaseDisputeData,
+            ITelemetryClient telemetryClient)
+        {
+            Requires.NotNull(context, nameof(context));
+            Requires.NotNull(filteredBaseInsolvenciesData, nameof(filteredBaseInsolvenciesData));
+            Requires.NotNull(filteredBaseDisputeData, nameof(filteredBaseDisputeData));
+            Requires.NotNull(telemetryClient, nameof(telemetryClient));
+
+            this.context = context;
+            this.filteredBaseInsolvenciesData = filteredBaseInsolvenciesData;
+            this.filteredBaseDisputeData = filteredBaseDisputeData;
+            this.telemetryClient = telemetryClient;
+        }
+
+        /// <summary>
+        /// count as an asynchronous operation.
+        /// </summary>
+        /// <returns>Task&lt;System.Int32&gt;.</returns>
+        public async Task<int> CountAsync()
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryCountInsolvencyOrders))
+            {
+                return
+                    await GetBaseData()
+                    .Select(d => d.InsolvencyOrderId)
+                    .CountAsync();
+            }
+        }
+
+        /// <summary>
+        /// count by as an asynchronous operation.
+        /// </summary>
+        /// <typeparam name="T">Type of the keyValue</typeparam>
+        /// <param name="keyValue">Expected value of the key which is being filtered on.</param>
+        /// <param name="keyToSelectBy">The key which is being filtered by.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;System.Int32&gt;. containing count of records found</returns>
+        public async Task<int> CountByAsync<T>(T keyValue, Expression<Func<InsolvencyOrderEntity, T>> keyToSelectBy, params string[] includes)
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryCountInsolvencyOrdersBy))
+            {
+                var searchTerm = ExpressionHelper.ParameterisedSearchKey(keyValue);
+                var query =
+                    Expression.Lambda<Func<InsolvencyOrderEntity, bool>>(
+                        Expression.Equal(keyToSelectBy.Body, searchTerm),
+                        keyToSelectBy.Parameters);
+
+                var result =
+                    await GetBaseData(includes)
+                    .Where(query)
+                    .Select(x => x.InsolvencyOrderId)
+                    .CountAsync();
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Counts the by asynchronous.
+        /// </summary>
+        /// <param name="keysToSelectBy">The <see cref="ParameterisedSearchTerms{InsolvencyOrderFlattenedEntity}"/>containing the search terms.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;System.Int32&gt;.</returns>
+        /// <exception cref="NotImplementedException">Thrown as not currently implemented</exception>
+        public Task<int> CountByAsync(ParameterisedSearchTerms<InsolvencyOrderEntity> keysToSelectBy, params string[] includes)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// get all as an asynchronous operation.
+        /// </summary>
+        /// <param name="pageInformation">The <see cref="PageInformation"/>containing the request page, and page size.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;IEnumerable&lt;InsolvencyOrderModel&gt;&gt;. containing set of InsolvencyOrder data</returns>
+        public async Task<IEnumerable<InsolvencyOrderModel>> GetAllAsync(PageInformation pageInformation, params string[] includes)
+        {
+            Requires.NotNull(pageInformation, nameof(pageInformation));
+
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryGetAllInsolvencyOrders))
+            {
+                var data = await GetBaseData(includes)
+                    .OrderBy(x => x.InsolvencyOrderId)
+                    .Page(pageInformation)
+                    .ToListAsync();
+
+                data.ForEach(FilterDisputes);
+
+                return Mapper.Map<IEnumerable<InsolvencyOrderModel>>(data);
+            }
+        }
+
+        /// <summary>
+        /// get result by as an asynchronous operation.
+        /// </summary>
+        /// <typeparam name="T">Type of the keyValue</typeparam>
+        /// <param name="keyValue">Expected value of the key which is being filtered on.</param>
+        /// <param name="keyToSelectBy">The key which is being filtered by.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;InsolvencyOrderModel&gt;. containing the InsolvencyOrder model</returns>
+        public async Task<InsolvencyOrderModel> GetResultByAsync<T>(T keyValue, Expression<Func<InsolvencyOrderEntity, T>> keyToSelectBy, params string[] includes)
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryGetInsolvencyOrderBy))
+            {
+                var expectedSearchTerm = ExpressionHelper.ParameterisedSearchKey(keyValue);
+                var query =
+                    Expression.Lambda<Func<InsolvencyOrderEntity, bool>>(
+                        Expression.Equal(keyToSelectBy.Body, expectedSearchTerm),
+                        keyToSelectBy.Parameters);
+
+                var insolvencyEntity =
+                    await GetBaseData(includes)
+                    .Where(query)
+                    .FirstOrDefaultAsync();
+
+                FilterDisputes(insolvencyEntity);
+
+                return Mapper.Map<InsolvencyOrderModel>(insolvencyEntity);
+            }
+        }
+
+        /// <summary>
+        /// get result by as an asynchronous operation.
+        /// </summary>
+        /// <param name="keysToSelectBy">The <see cref="ParameterisedSearchTerms{InsolvencyOrderFlattenedEntity}"/>containing the search terms.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;IEnumerable&lt;InsolvencyOrderModel&gt;&gt;. containing a set of InsolvencyOrders</returns>
+        /// <exception cref="NotImplementedException">Thrown as not implemented</exception>
+        public Task<InsolvencyOrderModel> GetResultByAsync(ParameterisedSearchTerms<InsolvencyOrderEntity> keysToSelectBy, params string[] includes)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// get result by as an asynchronous operation.
+        /// </summary>
+        /// <typeparam name="T">Type of the keyValue</typeparam>
+        /// <param name="keyValue">Expected value of the key which is being filtered on.</param>
+        /// <param name="keyToSelectBy">The key which is being filtered by.</param>
+        /// <param name="pageInformation">The <see cref="PageInformation"/>containing the request page, and page size.</param>
+        /// <param name="includes">link records to include.</param>
+        /// <returns>Task&lt;InsolvencyOrderModel&gt;. containing the InsolvencyOrder model</returns>
+        public async Task<IEnumerable<InsolvencyOrderModel>> GetResultsByAsync<T>(
+            T keyValue,
+            Expression<Func<InsolvencyOrderEntity, T>> keyToSelectBy,
+            PageInformation pageInformation,
+            params string[] includes)
+        {
+            Requires.NotNull(pageInformation, nameof(pageInformation));
+
+            using (telemetryClient.StartOperation<DependencyTelemetry>(TelemetryLabels.RepositoryGetInsolvencyOrdersBy))
+            {
+                var expectedSearchTerm = ExpressionHelper.ParameterisedSearchKey(keyValue);
+                var query =
+                    Expression.Lambda<Func<InsolvencyOrderEntity, bool>>(
+                        Expression.Equal(keyToSelectBy.Body, expectedSearchTerm),
+                        keyToSelectBy.Parameters);
+
+                var data = await GetBaseData(includes)
+                    .Where(query)
+                    .OrderBy(x => x.InsolvencyOrderId)
+                    .Page(pageInformation)
+                    .ToListAsync();
+
+                data.ForEach(FilterDisputes);
+
+                return Mapper.Map<IEnumerable<InsolvencyOrderModel>>(data);
+            }
+        }
+
+        /// <summary>
+        /// Gets the results by asynchronous.
+        /// </summary>
+        /// <param name="keysToSelectBy">The keys to select by.</param>
+        /// <param name="pageInformation">The page information.</param>
+        /// <param name="includes">The includes.</param>
+        /// <returns>Task&lt;IEnumerable&lt;InsolvencyOrderModel&gt;&gt;.</returns>
+        /// <exception cref="NotImplementedException">Thrown as not currently implemented</exception>
+        public Task<IEnumerable<InsolvencyOrderModel>> GetResultsByAsync(ParameterisedSearchTerms<InsolvencyOrderEntity> keysToSelectBy, PageInformation pageInformation, params string[] includes)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Filters the disputes.
+        /// </summary>
+        /// <param name="insolvencyEntity">The <see cref="InsolvencyOrderModel"/> model</param>
+        private void FilterDisputes(InsolvencyOrderEntity insolvencyEntity)
+        {
+            if (insolvencyEntity?.InsolvencyOrderDisputes != null && insolvencyEntity.InsolvencyOrderDisputes.Count != 0)
+            {
+                var disputes = insolvencyEntity.InsolvencyOrderDisputes.Select(i => i.Dispute);
+                var filteredDisputes = filteredBaseDisputeData.FilteredContext(disputes.AsQueryable()).Cast<DisputeEntity>();
+
+                insolvencyEntity.InsolvencyOrderDisputes =
+                    filteredDisputes
+                    .SelectMany(i => i.InsolvencyOrderDisputes)
+                    .ToList();
+            }
+        }
+
+        /// <summary>
+        /// Gets the base data.
+        /// </summary>
+        /// <param name="includes">link records to include.</param>
+        /// <returns><see cref="IQueryable{InsolvencyOrderEntity}"/> containing queryable set of InsolvencyOrderEntity data</returns>
+        private IQueryable<InsolvencyOrderEntity> GetBaseData(params string[] includes)
+        {
+            IQueryable<InsolvencyOrderEntity> queryable = GetAllFromQueryableDataStore(includes);
+
+            queryable = filteredBaseInsolvenciesData.FilteredContext(queryable).Cast<InsolvencyOrderEntity>();
+
+            return queryable;
+        }
+
+        /// <summary>
+        /// Provide implementation for retrieving InsolvencyOrderEntity data.
+        /// </summary>
+        /// <param name="includes">link records to include.</param>
+        /// <returns><see cref="IQueryable{InsolvencyOrderEntity}"/> containing queryable set of InsolvencyOrderEntity data.</returns>
+        private IQueryable<InsolvencyOrderEntity> GetAllFromQueryableDataStore(string[] includes)
+        {
+            var queryable = context.InsolvencyOrderEntities.AsNoTracking().AsQueryable();
+
+            queryable = queryable.Include(insolvency => insolvency.InsolvencyOrderType);
+            queryable = queryable.Include(insolvency => insolvency.InsolvencyRestrictionsType);
+
+            if (includes.Contains(DomainResources.InsolvencyOrderPersons, StringComparer.OrdinalIgnoreCase))
+            {
+                queryable = queryable.Include(insolvency => insolvency.InsolvencyOrderPersons);
+            }
+
+            if (includes.Contains(DomainResources.InsolvencyOrderAddresses, StringComparer.OrdinalIgnoreCase))
+            {
+                queryable = queryable.Include(insolvency => insolvency.InsolvencyOrderAddresses);
+            }
+
+            if (includes.Contains(DomainResources.InsolvencyOrderHistories, StringComparer.OrdinalIgnoreCase))
+            {
+                queryable = queryable
+                    .Include(insolvency => insolvency.InsolvencyOrderHistory)
+                    .ThenInclude(s => s.Court)
+                    .Include(insolvency => insolvency.InsolvencyOrderHistory)
+                    .ThenInclude(s => s.InsolvencyOrderStatus);
+            }
+
+            if (includes.Contains(DomainResources.InsolvencyOrderTradingDetails, StringComparer.OrdinalIgnoreCase))
+            {
+                queryable = queryable.Include(insolvency => insolvency.InsolvencyTradingDetails);
+            }
+
+            if (includes.Contains(DomainResources.Disputes, StringComparer.OrdinalIgnoreCase))
+            {
+                queryable = queryable
+                    .Include(insolvency => insolvency.InsolvencyOrderDisputes)
+                    .ThenInclude(insolvencyOrderDispute => insolvencyOrderDispute.Dispute);
+            }
+
+            return queryable;
+        }
+    }
+}
