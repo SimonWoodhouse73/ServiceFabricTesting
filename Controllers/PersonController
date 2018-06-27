@@ -1,0 +1,174 @@
+// ***********************************************************************
+// Assembly         : Api
+// Author           : SimonW
+// Created          : 05-21-2018
+//
+// Last Modified By : SimonW
+// Last Modified On : 05-21-2018
+// ***********************************************************************
+// <copyright file="InsolvencyOrderPersonsController.cs" company="Callcredit Information Group.">
+// Copyright (c) 2018 Callcredit Information Group. All rights reserved.
+// </copyright>
+// <summary>Defines the InsolvencyOrderPersonsController</summary>
+// ***********************************************************************
+using System.Linq;
+using System.Threading.Tasks;
+using Api.EntityFramework.Entities;
+using Api.Telemetry;
+using Callcredit.AspNetCore.ProblemJson;
+using Callcredit.Domain.Insolvencies.Models;
+using Callcredit.Domain.Insolvencies.Repositories;
+using Callcredit.Domain.Insolvencies.Resources;
+using Callcredit.RESTful.DataAssets;
+using Callcredit.RESTful.Services.Hal;
+using Callcredit.RESTful.Services.Includes;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Validation;
+
+namespace Api.Controllers
+{
+    /// <summary>
+    /// Persons API Controller
+    /// </summary>
+    [Produces("application/hal+json")]
+    [Route("api/uk")]
+    [Authorize(Policy = "Query")]
+    public class InsolvencyOrderPersonsController : Controller
+    {
+        private readonly IDataAccessCradle<InsolvencyOrderPersonModel> cradle;
+        private readonly IInsolvencyOrderPersonsRepository<InsolvencyOrderPersonModel, InsolvencyOrderPersonEntity> personsRepository;
+        private readonly IPageInformationProvider pageInformationProvider;
+        private readonly IIncludeReader includeReader;
+        private readonly IHalFormatter<InsolvencyOrderPersonModel> personFormatter;
+        private readonly IHalCollectionFormatter<InsolvencyOrderPersonModel> personCollectionFormatter;
+        private readonly ITelemetryClient telemetryClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InsolvencyOrderPersonsController"/> class.
+        /// </summary>
+        /// <param name="cradle">CallCredit data access cradle</param>
+        /// <param name="personsRepository">Person data access repository</param>
+        /// <param name="includeReader">reads include parameters from URI</param>
+        /// <param name="pageInformationProvider">Determines the size/number of pages in a data result set.</param>
+        /// <param name="personFormatter">Creates HAL formatted json for individual Persons objects </param>
+        /// <param name="personCollectionFormatter">Creates HAL formatted json for arrays of Persons objects</param>
+        /// <param name="telemetryClient">
+        /// The <see cref="TelemetryClient" /> used to log custom telemetry requests.
+        /// </param>
+        public InsolvencyOrderPersonsController(
+            IDataAccessCradle<InsolvencyOrderPersonModel> cradle,
+            IInsolvencyOrderPersonsRepository<InsolvencyOrderPersonModel, InsolvencyOrderPersonEntity> personsRepository,
+            IIncludeReader includeReader,
+            IPageInformationProvider pageInformationProvider,
+            IHalFormatter<InsolvencyOrderPersonModel> personFormatter,
+            IHalCollectionFormatter<InsolvencyOrderPersonModel> personCollectionFormatter,
+            ITelemetryClient telemetryClient)
+        {
+            Requires.NotNull(cradle, nameof(cradle));
+            Requires.NotNull(personsRepository, nameof(personsRepository));
+            Requires.NotNull(includeReader, nameof(includeReader));
+            Requires.NotNull(pageInformationProvider, nameof(pageInformationProvider));
+            Requires.NotNull(personFormatter, nameof(personFormatter));
+            Requires.NotNull(personCollectionFormatter, nameof(personCollectionFormatter));
+            Requires.NotNull(telemetryClient, nameof(telemetryClient));
+
+            this.cradle = cradle;
+            this.personsRepository = personsRepository;
+            this.includeReader = includeReader;
+            this.pageInformationProvider = pageInformationProvider;
+            this.personFormatter = personFormatter;
+            this.personCollectionFormatter = personCollectionFormatter;
+            this.telemetryClient = telemetryClient;
+        }
+
+        /// <summary>
+        /// Retrieves a paged collection of all Persons for a Insolvency record.records
+        /// </summary>
+        /// <remarks>
+        /// Available Query Strings :::
+        ///
+        /// 'page' - The page query string is used to select the page index of results to view. For example: ...?page=5
+        /// </remarks>
+        /// <param name="insolvencyOrderId">The unique business key of the insolvency.</param>
+        /// <returns>A paged collections of Persons.</returns>
+        /// <response code="200">Request fulfilled. The message body contains the page collection of resources.</response>
+        /// <response code="204">No information to send back. The HTTP header will not be returned and message body will be empty.</response>
+        /// <response code="400">Bad request. The message body will contain details for the validation error that occurred.</response>
+        /// <response code="401">Unauthorized. The message body will contain details for the authentication error that occurred.</response>
+        /// <response code="403">Forbidden. The message body will contain error details indicating that the client is not authorised to perform the operation.</response>
+        /// <response code="404">Not Found. The message body will contain error details indicating that the resource was not found.</response>
+        /// <response code="405">Not allowed. The message body will contain error details indicating that the resource does not support verb.</response>
+        [ProducesResponseType(typeof(InsolvencyOrderPersonModel), 200)]
+        [ProducesResponseType(typeof(InsolvencyOrderPersonModel), 204)]
+        [ProducesResponseType(typeof(Problem), 400)]
+        [ProducesResponseType(typeof(Problem), 401)]
+        [ProducesResponseType(typeof(Problem), 403)]
+        [ProducesResponseType(typeof(Problem), 404)]
+        [ProducesResponseType(typeof(Problem), 405)]
+        [HttpGet("mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-persons", Name = DomainResources.InsolvencyOrderPersons)]
+        [ParameterValidation("InsolvencyOrderId")]
+        [Authorize(Policy = "Query")]
+        public async Task<IActionResult> GetPersonsByInsolvencyIdAsync(int insolvencyOrderId)
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(Telemetry.TelemetryLabels.GetPersonsForInsolvency))
+            {
+                var includes = includeReader.GetIncludes().ToArray();
+                var pageInformation = pageInformationProvider.GetPageInformation();
+
+                var data = await cradle.GetPagedDataSetAsync(
+                    () => personsRepository.GetResultsByAsync(insolvencyOrderId, entity => entity.InsolvencyOrderId, pageInformation, includes),
+                    () => personsRepository.CountByAsync(insolvencyOrderId, entity => entity.InsolvencyOrderId, includes));
+
+                var halResponse = personCollectionFormatter.FormatForHal(data);
+
+                return Ok(halResponse);
+            }
+        }
+
+        /// <summary>
+        /// Provides the ability to get a single person by its unique business key and associated Insolvency business key.
+        /// </summary>
+        /// <remarks>
+        /// Available Query Strings :::
+        ///
+        /// 'include' - a string value specifying an embedded resource to include. Can be specified as many times as needed. Example : ?include=myproperty
+        /// </remarks>
+        /// <param name="insolvencyOrderPersonId">The unique business key of the person.</param>
+        /// <returns>A paged collections of resources from the entire resource collection.</returns>
+        /// <response code="200">The message body contain a representation of the paged collections of resources.</response>
+        /// <response code="204">A Content-Type HTTP header shall not be returned. The message body shall be empty.</response>
+        /// <response code="400">The message body shall contain error details including the validation errors that occurred.</response>
+        /// <response code="401">The message body shall contain error details indicating that the client cannot be authenticated.</response>
+        /// <response code="403">The message body shall contain error details indicating that the client is not authorised to perform operation against the resource.</response>
+        /// <response code="404">The message body shall contain error details indicating that the resource was not found.</response>
+        /// <response code="405">The message body shall contain error details indicating that the resource does not support verb.</response>
+        [ProducesResponseType(typeof(InsolvencyOrderPersonModel), 200)]
+        [ProducesResponseType(typeof(InsolvencyOrderPersonModel), 204)]
+        [ProducesResponseType(typeof(Problem), 400)]
+        [ProducesResponseType(typeof(Problem), 401)]
+        [ProducesResponseType(typeof(Problem), 403)]
+        [ProducesResponseType(typeof(Problem), 404)]
+        [ProducesResponseType(typeof(Problem), 405)]
+        [HttpGet("mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-persons/{InsolvencyOrderPersonId}", Name = DomainResources.InsolvencyOrderPerson)]
+        [ParameterValidation("InsolvencyOrderId")]
+        [ParameterValidation("InsolvencyOrderPersonId")]
+        [Authorize(Policy = "Query")]
+        public async Task<IActionResult> GetPersonsByPersonId(int insolvencyOrderPersonId)
+        {
+            using (telemetryClient.StartOperation<DependencyTelemetry>(Telemetry.TelemetryLabels.GetPerson))
+            {
+                var includes = includeReader.GetIncludes().ToArray();
+                var data = await cradle.GetItemAsync(
+                    () =>
+                    personsRepository.GetResultByAsync(insolvencyOrderPersonId, person => person.InsolvencyOrderPersonId, includes));
+
+                var halResponse = personFormatter.FormatForHal(data);
+
+                return Ok(halResponse);
+            }
+        }
+    }
+}
