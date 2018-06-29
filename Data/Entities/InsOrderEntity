@@ -1,0 +1,140 @@
+// ***********************************************************************
+// Assembly         : Api
+// Author           : markco
+// Created          : 05-18-2018
+//
+// Last Modified By : markco
+// Last Modified On : 05-22-2018
+// ***********************************************************************
+// <copyright file="InsolvencyOrderEntity.cs" company="Callcredit Information Group.">
+//     Copyright (c) 2018 Callcredit Information Group. All rights reserved.
+// </copyright>
+// <summary>InsolvencyOrderEntity class</summary>
+// ***********************************************************************
+using System;
+using System.Collections.Generic;
+using Callcredit.Domain.Insolvencies.Filters.InsolvencyOrder;
+
+namespace Api.EntityFramework.Entities
+{
+    /// <summary>
+    /// Represents an Insolvency Order
+    /// </summary>
+    /// <seealso cref="Callcredit.Domain.Insolvencies.Filters.InsolvencyOrder.IInsolvencyOrderFilterBase" />
+    public partial class InsolvencyOrderEntity : IInsolvencyOrderFilterBase
+    {
+        /// <summary>
+        /// Gets or sets the unqiue identifier for <see cref="InsolvencyOrderEntity" />
+        /// </summary>
+        /// <value>The Insolvency Order identifier.</value>
+        public int InsolvencyOrderId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Insolvency Order type identifier.
+        /// </summary>
+        /// <value>The Insolvency Order type identifier.</value>
+        public short? InsolvencyOrderTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the Insolvency Order.
+        /// </summary>
+        /// <value>The type of the Insolvency Order, <see cref="InsolvencyOrderTypeEntity" />.</value>
+        public InsolvencyOrderTypeEntity InsolvencyOrderType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Residence identifier.
+        /// </summary>
+        /// <value>The Residence identifier.</value>
+        public int? ResidenceId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the order date.
+        /// </summary>
+        /// <value>The order date.</value>
+        public DateTime? OrderDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the restrictions type identifier.
+        /// </summary>
+        /// <value>The restrictions type identifier.</value>
+        public short? RestrictionsTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the insolvency restrictions.
+        /// </summary>
+        /// <value>The type of the insolvency restrictions, <see cref="InsolvencyRestrictionsTypeEntity" />.</value>
+        public InsolvencyRestrictionsTypeEntity InsolvencyRestrictionsType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the restrictions start date.
+        /// </summary>
+        /// <value>The restrictions start date.</value>
+        public DateTime? RestrictionsStartDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the restrictions end date.
+        /// </summary>
+        /// <value>The restrictions end date.</value>
+        public DateTime? RestrictionsEndDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the line of business.
+        /// </summary>
+        /// <value>The line of business.</value>
+        public string LineOfBusiness { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Insolvency Service case identifier.
+        /// </summary>
+        /// <value>The Insolvency Service case identifier.</value>
+        public int? InsolvencyServiceCaseId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of debt.
+        /// </summary>
+        /// <value>The value of debt.</value>
+        public decimal? ValueOfDebt { get; set; }
+
+        /// <summary>
+        /// Gets or sets the discharge date.
+        /// </summary>
+        /// <value>The discharge date.</value>
+        public DateTime? DischargeDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [online suppressed] is set.
+        /// </summary>
+        /// <value><c>true</c> if [online suppressed]; otherwise, <c>false</c>.</value>
+        public bool OnlineSuppressed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Insolvency Order Persons associated with an Insolvency Order.
+        /// </summary>
+        /// <value>The insolvency order persons collection, <see cref="InsolvencyOrderPersonEntity" />.</value>
+        public ICollection<InsolvencyOrderPersonEntity> InsolvencyOrderPersons { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Insolvency Order Addresses associated with an Insolvency Order
+        /// </summary>
+        /// <value>The insolvency order addresses collection, <see cref="InsolvencyOrderAddressEntity" />.</value>
+        public ICollection<InsolvencyOrderAddressEntity> InsolvencyOrderAddresses { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Insolvency Order history.
+        /// </summary>
+        /// <value>The insolvency order history,  <see cref="InsolvencyOrderHistoryEntity" />.</value>
+        public ICollection<InsolvencyOrderHistoryEntity> InsolvencyOrderHistory { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Trading Details of an Insolvency Order.
+        /// </summary>
+        /// <value>The insolvency trading details, <see cref="InsolvencyTradingDetailsEntity" />.</value>
+        public ICollection<InsolvencyTradingDetailsEntity> InsolvencyTradingDetails { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Insolvency Order disputes associated with an Insolvency Order.
+        /// </summary>
+        /// <value>The insolvency order disputes collection, <see cref="InsolvencyOrderDisputeEntity" />.</value>
+        public virtual ICollection<InsolvencyOrderDisputeEntity> InsolvencyOrderDisputes { get; set; }
+    }
+}

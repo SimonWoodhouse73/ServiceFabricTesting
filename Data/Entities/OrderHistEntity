@@ -1,0 +1,75 @@
+// ***********************************************************************
+// Assembly         : Api
+// Author           : markco
+// Created          : 05-18-2018
+//
+// Last Modified By : markco
+// Last Modified On : 05-22-2018
+// ***********************************************************************
+// <copyright file="InsolvencyOrderHistoryEntity.cs" company="Callcredit Information Group.">
+//     Copyright (c) 2018 Callcredit Information Group. All rights reserved.
+// </copyright>
+// <summary>InsolvencyOrderHistoryEntity class</summary>
+// ***********************************************************************
+namespace Api.EntityFramework.Entities
+{
+    /// <summary>
+    /// Represents an Insolvency Order History item
+    /// </summary>
+    public partial class InsolvencyOrderHistoryEntity
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier for <see cref="InsolvencyOrderHistoryEntity" />
+        /// </summary>
+        /// <value>The insolvency order history identifier.</value>
+        public int InsolvencyOrderHistoryId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the insolvency order identifier.
+        /// </summary>
+        /// <value>The insolvency order identifier.</value>
+        public int InsolvencyOrderId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the insolvency order entity.
+        /// </summary>
+        /// <value>The insolvency order entity, <see cref="InsolvencyOrderEntity" /></value>
+        public InsolvencyOrderEntity InsolvencyOrderEntity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the insolvency order status identifier.
+        /// </summary>
+        /// <value>The insolvency order status identifier.</value>
+        public short? InsolvencyOrderStatusId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the insolvency order status.
+        /// </summary>
+        /// <value>The insolvency order status, <see cref="InsolvencyOrderStatusEntity" />.</value>
+        public InsolvencyOrderStatusEntity InsolvencyOrderStatus { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique court identifier.
+        /// </summary>
+        /// <value>The court identifier.</value>
+        public int? CourtId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the court entity.
+        /// </summary>
+        /// <value>An instance of the court, <see cref="CourtEntity" />.</value>
+        public CourtEntity Court { get; set; }
+
+        /// <summary>
+        /// Gets or sets the case reference.
+        /// </summary>
+        /// <value>The case reference.</value>
+        public string CaseReference { get; set; }
+
+        /// <summary>
+        /// Gets or sets the case year.
+        /// </summary>
+        /// <value>The case year.</value>
+        public short? CaseYear { get; set; }
+    }
+}

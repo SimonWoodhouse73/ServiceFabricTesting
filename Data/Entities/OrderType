@@ -1,0 +1,34 @@
+using System.Collections.Generic;
+
+namespace Api.EntityFramework.Entities
+{
+    /// <summary>
+    /// Represents an InsolvencyOrderTypeEntity.
+    /// </summary>
+    public partial class InsolvencyOrderTypeEntity
+    {
+        /// <summary>
+        /// Gets or sets the unique insolvency order type identifier.
+        /// </summary>
+        /// <value>The insolvency order type identifier.</value>
+        public short InsolvencyOrderTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
+        /// <value>The description.</value>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the 2 character CallReport code.
+        /// </summary>
+        /// <value>The code to be used.</value>
+        public string CallReportCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the insolvency order entities.
+        /// </summary>
+        /// <value>The insolvency order entities, <see cref="InsolvencyOrderEntity" />. (Entity Framework navigation property)</value>
+        public ICollection<InsolvencyOrderEntity> InsolvencyOrderEntities { get; set; }
+    }
+}

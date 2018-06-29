@@ -1,0 +1,34 @@
+using System.Collections.Generic;
+
+namespace Api.EntityFramework.Entities
+{
+    /// <summary>
+    /// Represents an InsolvencyOrderStatusEntity.
+    /// </summary>
+    public partial class InsolvencyOrderStatusEntity
+    {
+        /// <summary>
+        /// Gets or sets the unique insolvency order status identifier.
+        /// </summary>
+        /// <value>The insolvency order status identifier.</value>
+        public short InsolvencyOrderStatusId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
+        /// <value>The description.</value>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the status aggregate identifier.
+        /// </summary>
+        /// <value>The status aggregate value.</value>
+        public string StatusAggregate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the insolvency order histories.
+        /// </summary>
+        /// <value>The insolvency order histories, <see cref="InsolvencyOrderHistoryEntity" />. (Entity Framework navigation property)</value>
+        public ICollection<InsolvencyOrderHistoryEntity> InsolvencyOrderHistories { get; set; }
+    }
+}
