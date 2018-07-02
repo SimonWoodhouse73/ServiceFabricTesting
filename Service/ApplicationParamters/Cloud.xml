@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/uk.mastered-data.insolvency-orders" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="Insolvencies.PlacementConstraints_NodeType" Value="(NodeType == pcivm)" />
+    <Parameter Name="Insolvencies.Batch.PlacementConstraints_NodeType" Value="(NodeType == pcibatvm)" />
+    <Parameter Name="ApplicationInsights_InstrumentationKey" Value="#{ApplicationInsights.InstrumentationKey}" />
+    <Parameter Name="EnvironmentName" Value="Production" />
+    <Parameter Name="Protocol" Value="https" />
+  </Parameters>
+</Application>
