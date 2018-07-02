@@ -1,0 +1,102 @@
+<!--
+    IMPORTANT:
+    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.
+    - Only the <forward-request> policy element can appear within the <backend> section element.
+    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.
+    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.
+    - To add a policy position the cursor at the desired insertion point and click on the round button associated with the policy.
+    - To remove a policy, delete the corresponding policy statement from the policy document.
+    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.
+    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.
+    - Policies are applied in the order of their appearance, from the top down.
+-->
+<policies>
+  <inbound>
+    <base />
+    <set-backend-service
+      backend-id="insolvency-ordersfabric"
+      sf-service-instance-name="@{
+        var isBatch = context.Request.Headers.GetValueOrDefault("User-Agent", "").Contains("Batch");
+        
+        return 
+          isBatch
+          ? "fabric:/uk.mastered-data.insolvency-orders/api-batch"
+          : "fabric:/uk.mastered-data.insolvency-orders/api";
+      }"
+      sf-resolve-condition="@(context.LastError?.Reason == "BackendConnectionFailure")" />
+  </inbound>
+  <backend>
+    <base />
+  </backend>
+  <outbound>
+    <base />
+    <log-to-eventhub logger-id="auditcredit">
+      @{
+      // Request fields
+      string requestDateTime = context.Request.Headers.GetValueOrDefault("Date", "");
+      string searchPointDateTime = context.Request.Headers.GetValueOrDefault("Operation-Date", "");
+      string resourceAddress = string.Concat(context.Request.Url.Path, context.Request.Url.QueryString);
+      string method = context.Request.Method;
+      string searchRequestCorrelationId = context.Request.Headers.GetValueOrDefault("Correlation-Id", "");
+
+      // Response fields
+      string responseDateTime = context.Response.Headers.GetValueOrDefault("Date", "");
+      string responseCode = context.Response.StatusCode.ToString();
+
+      // Build JObject hierarchy
+      JObject dataAccessRequested = new JObject
+      (
+      new JProperty("ResourceAddress", resourceAddress),
+      new JProperty("Method", method),
+      new JProperty("RequestedDateTime", requestDateTime),
+      new JProperty("OperationDateTime", searchPointDateTime),
+      new JProperty("CorrelationId", searchRequestCorrelationId)
+      );
+
+      JObject resources;
+      List<JObject>
+        res = new List<JObject>
+          ();
+          var responseBody = context.Response.Body?.As<string>(true);
+      if (responseBody != null)
+      {
+          string pattern = @"""self"":{""href"":""(.+?)""";
+          Regex expression = new Regex(pattern, RegexOptions.IgnoreCase);
+          var results = expression.Matches(responseBody);
+          foreach (Match match in results)
+          {
+              var obj = new JObject(new JProperty("ResourceAddress", match.Groups[1].Value));
+              res.Add(new JObject(new JProperty("Resource", obj)));
+          }
+          resources = new JObject(new JProperty("Resources", res));
+      }
+      else
+      {
+          resources = new JObject();
+      }
+
+      JObject dataAccessResults = new JObject
+      (
+          new JProperty("ResponseDateTime", responseDateTime),
+          new JProperty("ResponseCode", responseCode),
+          new JProperty("Resources", res)
+      );
+
+      JObject dataAccessAudit = new JObject
+      (
+          new JProperty("Requested", dataAccessRequested),
+          new JProperty("Results", dataAccessResults)
+      );
+
+      return new JObject
+      (
+        new JProperty("DataSubjectDataAccessAudit", dataAccessAudit)
+      ).ToString(Newtonsoft.Json.Formatting.None);
+    }
+    </log-to-eventhub>
+  </outbound>
+  <on-error>
+    <base />
+    <trace source="LastErrorReason">@(context.LastError?.Reason)</trace>
+  </on-error>
+</policies>

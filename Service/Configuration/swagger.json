@@ -1,0 +1,1128 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "v1",
+        "title": "Callcredit.Insolvencies.Service Mastered Data",
+        "description": "Adds resources in the Callcredit.Insolvencies.Service domain to the overall Callcredit Api."
+    },
+    "paths": {
+        "/api/uk/mastered-data/insolvency-orders/{InsolvencyOrderId}/disputes": {
+            "get": {
+                "tags": [
+                    "Disputes"
+                ],
+                "summary": "Retrieves a paged collection of all Disputes for a Insolvency record.records",
+                "description": "Available Query Strings :::\r\n            'page' - The page query string is used to select the page index of results to view. For example: ...?page=5",
+                "operationId": "ApiUkMastered-dataInsolvency-ordersByInsolvencyOrderIdDisputesGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "parameters": [
+                    {
+                        "name": "insolvencyOrderId",
+                        "in": "path",
+                        "description": "The unique business key of the insolvency.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request fulfilled. The message body contains the page collection of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/DisputeModel"
+                        }
+                    },
+                    "204": {
+                        "description": "No information to send back. The HTTP header will not be returned and message body will be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/DisputeModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request. The message body will contain details for the validation error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. The message body will contain details for the authentication error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden. The message body will contain error details indicating that the client is not authorised to perform the operation.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found. The message body will contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "Not allowed. The message body will contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/mastered-data/insolvency-orders/{InsolvencyOrderId}/disputes/{DisputeId}": {
+            "get": {
+                "tags": [
+                    "Disputes"
+                ],
+                "summary": "Provides the ability to get a single dispute by its unique business key and associated Insolvency business key.",
+                "description": "Available Query Strings :::\r\n            'include' - a string value specifying an embedded resource to include. Can be specified as many times as needed. Example : ?include=myproperty",
+                "operationId": "ApiUkMastered-dataInsolvency-ordersByInsolvencyOrderIdDisputesByDisputeIdGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "parameters": [
+                    {
+                        "name": "disputeId",
+                        "in": "path",
+                        "description": "The unique business key of the dispute.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "InsolvencyOrderId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The message body contain a representation of the paged collections of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/DisputeModel"
+                        }
+                    },
+                    "204": {
+                        "description": "A Content-Type HTTP header shall not be returned. The message body shall be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/DisputeModel"
+                        }
+                    },
+                    "400": {
+                        "description": "The message body shall contain error details including the validation errors that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "The message body shall contain error details indicating that the client cannot be authenticated.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "The message body shall contain error details indicating that the client is not authorised to perform operation against the resource.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "The message body shall contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "The message body shall contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-addresses": {
+            "get": {
+                "tags": [
+                    "InsolvencyOrderAddresses"
+                ],
+                "summary": "Retrieves a paged collection of all Addresses for a Insolvency record.records",
+                "description": "Available Query Strings :::\r\n            \r\n'page' - The page query string is used to select the page index of results to view. For example: ...?page=5",
+                "operationId": "ApiUkMastered-dataInsolvency-ordersByInsolvencyOrderIdInsolvency-order-addressesGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "parameters": [
+                    {
+                        "name": "insolvencyOrderId",
+                        "in": "path",
+                        "description": "The unique business key of the insolvency.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request fulfilled. The message body contains the page collection of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderAddressModel"
+                        }
+                    },
+                    "204": {
+                        "description": "No information to send back. The HTTP header will not be returned and message body will be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderAddressModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request. The message body will contain details for the validation error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. The message body will contain details for the authentication error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden. The message body will contain error details indicating that the client is not authorised to perform the operation.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found. The message body will contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "Not allowed. The message body will contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-addresses/{InsolvencyOrderAddressId}": {
+            "get": {
+                "tags": [
+                    "InsolvencyOrderAddresses"
+                ],
+                "summary": "Provides the ability to get a single address by its unique business key and associated Insolvency business key.",
+                "description": "Available Query Strings :::\r\n            \r\n'include' - a string value specifying an embedded resource to include. Can be specified as many times as needed. Example : ?include=myproperty",
+                "operationId": "ApiUkMastered-dataInsolvency-ordersByInsolvencyOrderIdInsolvency-order-addressesByInsolvencyOrderAddressIdGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "parameters": [
+                    {
+                        "name": "insolvencyOrderAddressId",
+                        "in": "path",
+                        "description": "The unique business key of the address.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "InsolvencyOrderId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The message body contain a representation of the paged collections of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderAddressModel"
+                        }
+                    },
+                    "204": {
+                        "description": "A Content-Type HTTP header shall not be returned. The message body shall be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderAddressModel"
+                        }
+                    },
+                    "400": {
+                        "description": "The message body shall contain error details including the validation errors that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "The message body shall contain error details indicating that the client cannot be authenticated.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "The message body shall contain error details indicating that the client is not authorised to perform operation against the resource.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "The message body shall contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "The message body shall contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-histories": {
+            "get": {
+                "tags": [
+                    "InsolvencyOrderHistories"
+                ],
+                "summary": "Retrieves a paged collection of all Histories for a Insolvency record.records",
+                "description": "Available Query Strings :::\r\n            \r\n'page' - The page query string is used to select the page index of results to view. For example: ...?page=5",
+                "operationId": "ApiUkMastered-dataInsolvency-ordersByInsolvencyOrderIdInsolvency-order-historiesGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "parameters": [
+                    {
+                        "name": "insolvencyOrderId",
+                        "in": "path",
+                        "description": "The unique business key of the insolvency.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request fulfilled. The message body contains the page collection of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderHistoryModel"
+                        }
+                    },
+                    "204": {
+                        "description": "No information to send back. The HTTP header will not be returned and message body will be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderHistoryModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request. The message body will contain details for the validation error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. The message body will contain details for the authentication error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden. The message body will contain error details indicating that the client is not authorised to perform the operation.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found. The message body will contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "Not allowed. The message body will contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-histories/{InsolvencyOrderHistoryId}": {
+            "get": {
+                "tags": [
+                    "InsolvencyOrderHistories"
+                ],
+                "summary": "Provides the ability to get a single history by its unique business key and associated Insolvency business key.",
+                "description": "Available Query Strings :::\r\n            \r\n'include' - a string value specifying an embedded resource to include. Can be specified as many times as needed. Example : ?include=myproperty",
+                "operationId": "ApiUkMastered-dataInsolvency-ordersByInsolvencyOrderIdInsolvency-order-historiesByInsolvencyOrderHistoryIdGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "parameters": [
+                    {
+                        "name": "insolvencyOrderHistoryId",
+                        "in": "path",
+                        "description": "The unique business key of the history.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "InsolvencyOrderId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The message body contain a representation of the paged collections of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderHistoryModel"
+                        }
+                    },
+                    "204": {
+                        "description": "A Content-Type HTTP header shall not be returned. The message body shall be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderHistoryModel"
+                        }
+                    },
+                    "400": {
+                        "description": "The message body shall contain error details including the validation errors that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "The message body shall contain error details indicating that the client cannot be authenticated.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "The message body shall contain error details indicating that the client is not authorised to perform operation against the resource.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "The message body shall contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "The message body shall contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-persons": {
+            "get": {
+                "tags": [
+                    "InsolvencyOrderPersons"
+                ],
+                "summary": "Retrieves a paged collection of all Persons for a Insolvency record.records",
+                "description": "Available Query Strings :::\r\n            \r\n'page' - The page query string is used to select the page index of results to view. For example: ...?page=5",
+                "operationId": "ApiUkMastered-dataInsolvency-ordersByInsolvencyOrderIdInsolvency-order-personsGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "parameters": [
+                    {
+                        "name": "insolvencyOrderId",
+                        "in": "path",
+                        "description": "The unique business key of the insolvency.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request fulfilled. The message body contains the page collection of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderPersonModel"
+                        }
+                    },
+                    "204": {
+                        "description": "No information to send back. The HTTP header will not be returned and message body will be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderPersonModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request. The message body will contain details for the validation error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. The message body will contain details for the authentication error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden. The message body will contain error details indicating that the client is not authorised to perform the operation.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found. The message body will contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "Not allowed. The message body will contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-persons/{InsolvencyOrderPersonId}": {
+            "get": {
+                "tags": [
+                    "InsolvencyOrderPersons"
+                ],
+                "summary": "Provides the ability to get a single person by its unique business key and associated Insolvency business key.",
+                "description": "Available Query Strings :::\r\n            \r\n'include' - a string value specifying an embedded resource to include. Can be specified as many times as needed. Example : ?include=myproperty",
+                "operationId": "ApiUkMastered-dataInsolvency-ordersByInsolvencyOrderIdInsolvency-order-personsByInsolvencyOrderPersonIdGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "parameters": [
+                    {
+                        "name": "insolvencyOrderPersonId",
+                        "in": "path",
+                        "description": "The unique business key of the person.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "InsolvencyOrderId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The message body contain a representation of the paged collections of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderPersonModel"
+                        }
+                    },
+                    "204": {
+                        "description": "A Content-Type HTTP header shall not be returned. The message body shall be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderPersonModel"
+                        }
+                    },
+                    "400": {
+                        "description": "The message body shall contain error details including the validation errors that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "The message body shall contain error details indicating that the client cannot be authenticated.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "The message body shall contain error details indicating that the client is not authorised to perform operation against the resource.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "The message body shall contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "The message body shall contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/mastered-data/insolvency-orders": {
+            "get": {
+                "tags": [
+                    "InsolvencyOrders"
+                ],
+                "summary": "Retrieves a paged collection of all Insolvency records",
+                "description": "Paging:\r\nThe page query string is used to select the page index of results to view. For example: ...?page=5",
+                "operationId": "ApiUkMastered-dataInsolvency-ordersGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request fulfilled. The message body contains the page collection of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderModel"
+                        }
+                    },
+                    "204": {
+                        "description": "No information to send back. The HTTP header will not be returned and message body will be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request. The message body will contain details for the validation error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. The message body will contain details for the authentication error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden. The message body will contain error details indicating that the client is not authorised to perform the operation.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found. The message body will contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "Not allowed. The message body will contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/mastered-data/insolvency-orders/{InsolvencyOrderId}": {
+            "get": {
+                "tags": [
+                    "InsolvencyOrders"
+                ],
+                "summary": "Retrieves a single Insolvency record by Id",
+                "operationId": "ApiUkMastered-dataInsolvency-ordersByInsolvencyOrderIdGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "parameters": [
+                    {
+                        "name": "insolvencyOrderId",
+                        "in": "path",
+                        "description": "The unique business key of the insolvency.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request fulfilled. The message body contains the page collection of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderModel"
+                        }
+                    },
+                    "204": {
+                        "description": "No information to send back. The HTTP header will not be returned and message body will be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request. The message body will contain details for the validation error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. The message body will contain details for the authentication error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden. The message body will contain error details indicating that the client is not authorised to perform the operation.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found. The message body will contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "Not allowed. The message body will contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/population-map/residences/{ResidenceId}/insolvency-orders": {
+            "get": {
+                "tags": [
+                    "InsolvencyOrders"
+                ],
+                "summary": "Retrieves a paged collection of all Insolvency records for a specific Residence Id.",
+                "description": "Paging:\r\nThe page query string is used to select the page index of results to view. For example: ...?page=5",
+                "operationId": "ApiUkPopulation-mapResidencesByResidenceIdInsolvency-ordersGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "parameters": [
+                    {
+                        "name": "residenceId",
+                        "in": "path",
+                        "description": "The residence unique key by which to filter.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request fulfilled. The message body contains the page collection of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderModel"
+                        }
+                    },
+                    "204": {
+                        "description": "No information to send back. The HTTP header will not be returned and message body will be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request. The message body will contain details for the validation error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. The message body will contain details for the authentication error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden. The message body will contain error details indicating that the client is not authorised to perform the operation.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found. The message body will contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "Not allowed. The message body will contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-trading-details": {
+            "get": {
+                "tags": [
+                    "InsolvencyOrderTradingDetails"
+                ],
+                "summary": "Retrieves a paged collection of all Trading Details for an Insolvency record",
+                "description": "Available Query Strings :::\r\n'page' - The page query string is used to select the page index of results to view. For example: ...?page=5",
+                "operationId": "ApiUkMastered-dataInsolvency-ordersByInsolvencyOrderIdInsolvency-order-trading-detailsGet",
+                "consumes": [],
+                "produces": [
+                    "application/hal+json"
+                ],
+                "parameters": [
+                    {
+                        "name": "insolvencyOrderId",
+                        "in": "path",
+                        "description": "The unique business key of the insolvency.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request fulfilled. The message body contains the page collection of resources.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderTradingDetailsModel"
+                        }
+                    },
+                    "204": {
+                        "description": "No information to send back. The HTTP header will not be returned and message body will be empty.",
+                        "schema": {
+                            "$ref": "#/definitions/InsolvencyOrderTradingDetailsModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request. The message body will contain details for the validation error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. The message body will contain details for the authentication error that occurred.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden. The message body will contain error details indicating that the client is not authorised to perform the operation.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found. The message body will contain error details indicating that the resource was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    },
+                    "405": {
+                        "description": "Not allowed. The message body will contain error details indicating that the resource does not support verb.",
+                        "schema": {
+                            "$ref": "#/definitions/Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/uk/mastered-data/insolvency-orders/{InsolvencyOrderId}/insolvency-order-trading-details/{InsolvencyOrderTradingDetailsId}": {
+          "get": {
+            "tags": [
+              "InsolvencyOrderTradingDetails"
+            ],
+            "summary": "Provides the ability to get a single trading detail entity by its unique business key and associated Insolvency business key.",
+            "description": "Available Query Strings :::\r\n            \r\n'include' - a string value specifying an embedded resource to include. Can be specified as many times as needed. Example : ?include=myproperty",
+            "operationId": "ApiUkMastered-dataInsolvency-ordersByInsolvencyOrderIdInsolvency-order-trading-detailsByInsolvencyOrderTradingDetailsIdGet",
+            "consumes": [],
+            "produces": [
+              "application/hal+json"
+            ],
+            "parameters": [
+              {
+                "name": "insolvencyOrderTradingDetailsId",
+                "in": "path",
+                "description": "The unique business key of the trading detail entity.",
+                "required": true,
+                "type": "integer",
+                "format": "int32"
+              },
+              {
+                "name": "InsolvencyOrderId",
+                "in": "path",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "The message body contain a representation of the paged collections of resources.",
+                "schema": {
+                  "$ref": "#/definitions/InsolvencyOrderPersonModel"
+                }
+              },
+              "204": {
+                "description": "A Content-Type HTTP header shall not be returned. The message body shall be empty.",
+                "schema": {
+                  "$ref": "#/definitions/InsolvencyOrderPersonModel"
+                }
+              },
+              "400": {
+                "description": "The message body shall contain error details including the validation errors that occurred.",
+                "schema": {
+                  "$ref": "#/definitions/Problem"
+                }
+              },
+              "401": {
+                "description": "The message body shall contain error details indicating that the client cannot be authenticated.",
+                "schema": {
+                  "$ref": "#/definitions/Problem"
+                }
+              },
+              "403": {
+                "description": "The message body shall contain error details indicating that the client is not authorised to perform operation against the resource.",
+                "schema": {
+                  "$ref": "#/definitions/Problem"
+                }
+              },
+              "404": {
+                "description": "The message body shall contain error details indicating that the resource was not found.",
+                "schema": {
+                  "$ref": "#/definitions/Problem"
+                }
+              },
+              "405": {
+                "description": "The message body shall contain error details indicating that the resource does not support verb.",
+                "schema": {
+                  "$ref": "#/definitions/Problem"
+                }
+              }
+            }
+          }
+        }
+    },
+    "definitions": {
+        "DisputeModel": {
+            "type": "object",
+            "properties": {
+                "disputeId": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "referenceNumber": {
+                    "type": "string"
+                },
+                "dateRaised": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "displayed": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "Problem": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "instance": {
+                    "type": "string"
+                }
+            }
+        },
+        "InsolvencyOrderAddressModel": {
+            "type": "object",
+            "properties": {
+                "insolvencyOrderAddressId": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "postCode": {
+                    "type": "string"
+                }
+            }
+        },
+        "InsolvencyOrderHistoryModel": {
+            "type": "object",
+            "properties": {
+                "insolvencyOrderHistoryId": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "insolvencyOrderStatus": {
+                    "$ref": "#/definitions/InsolvencyOrderStatusModel"
+                },
+                "court": {
+                    "$ref": "#/definitions/CourtModel"
+                },
+                "caseReference": {
+                    "type": "string"
+                },
+                "caseYear": {
+                    "format": "int32",
+                    "type": "integer"
+                }
+            }
+        },
+        "InsolvencyOrderStatusModel": {
+            "type": "object",
+            "properties": {
+                "insolvencyOrderStatusId": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "CourtModel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "district": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "InsolvencyOrderPersonModel": {
+            "type": "object",
+            "properties": {
+                "insolvencyOrderPersonId": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "forename": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                },
+                "dateOfBirth": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            }
+        },
+        "InsolvencyOrderModel": {
+            "type": "object",
+            "properties": {
+                "insolvencyOrderId": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "insolvencyOrderType": {
+                    "$ref": "#/definitions/InsolvencyOrderTypeModel"
+                },
+                "residenceId": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "orderDate": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "dischargeDate": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "lineOfBusiness": {
+                    "type": "string"
+                },
+                "insolvencyServiceCaseId": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "restrictionsType": {
+                    "$ref": "#/definitions/InsolvencyOrderRestrictionsTypeModel"
+                },
+                "restrictionsStartDate": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "restrictionsEndDate": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "valueOfDebt": {
+                    "format": "double",
+                    "type": "number"
+                }
+            }
+        },
+        "InsolvencyOrderTypeModel": {
+            "type": "object",
+            "properties": {
+                "insolvencyOrderTypeId": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "InsolvencyOrderRestrictionsTypeModel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "InsolvencyOrderTradingDetailsModel": {
+            "type": "object",
+            "properties": {
+                "insolvencyOrderTradingDetailsId": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {},
+    "security": []
+}
