@@ -1,0 +1,20 @@
+{
+  "description": "Insolvencies Fabric Backend",
+  "url": "fabric:/uk.mastered-data.insolvency-orders",
+  "protocol": "https",
+  "resourceId": "https://10.51.24.126:19080",
+  "properties": {
+    "skipCertificateChainValidation": true,
+    "skipCertificateNameValidation": true,
+    "serviceFabricCluster": {
+      "managementEndpoints": [
+        "https://10.51.24.126:19080"
+      ],
+      "clientCertificateThumbprint": "C7B6B0131E6A7554EF94BC698F9362E97D25CA2C",
+      "serverCertificateThumbprints": [
+        "976DA21083C9CF2BF1441CA2860E66EB9E1561A5"
+      ],
+      "maxPartitionResolutionRetries": 5
+    }
+  }
+}
