@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net462;netstandard1.6</TargetFrameworks>
+    <AssemblyName>Callcredit.Domain.Insolvencies</AssemblyName>
+    <RootNamespace>Callcredit.Domain.Insolvencies</RootNamespace>
+    <Company>Callcredit</Company>
+    <FileVersion>1.0.2.0</FileVersion>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <!-- Commented out as powershell replacement token causes errors in loading project file in visual studio -->
+    <!-- Used by build process to version NuGet packages-->
+    <!--<PackageVersion>$version$</PackageVersion>-->
+    <title>Callcredit.Domain.Insolvencies</title>
+    <authors>Callcredit</authors>
+    <owners>Callcredit</owners>
+    <PackageProjectUrl>http://tfs:8080/tfs/ISD/SaasFramework-Domains/SaasFramework-Domains%20Team/_git/Insolvencies?path=%2FREADME.md&amp;version=GBmaster&amp;_a=contents</PackageProjectUrl>
+    <PackageIconUrl>\\cig.local\data\Callcredit Development\Private\Icons\icon50.png</PackageIconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <Description>This package provides a separation layer of logic that retrieves the data from data store and maps it to the Insolvency entity model.</Description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <Copyright>
+      Copyright Callcredit 2017. All rights reserved.
+      Title, copyright and all other intellectual property in all and every part of this work belong to Callcredit and its licensors (if any).
+      This work is confidential and the recipient must not make any copies of the whole or any part of this work, nor make the same available
+      to any third party without the prior written consent of Callcredit.
+    </Copyright>
+    <PackageTags>Callcredit Domain.Insolvencies SaasFramework</PackageTags>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <DocumentationFile>bin\Debug\Callcredit.Domain.Insolvencies.xml</DocumentationFile>
+    <LangVersion>default</LangVersion>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <OutputPath>bin\Debug\</OutputPath>
+    <CodeAnalysisRuleSet>StyleCop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>StyleCop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="NuGetVersioning.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Callcredit.Domain.Repositories" Version="4.0.0" />
+    <PackageReference Include="Callcredit.Domain.Repositories.GDPR" Version="2.0.0" />
+    <PackageReference Include="Callcredit.FirstInFirstOutFiltering" Version="1.3.0" />
+    <PackageReference Include="Callcredit.GDPR.Processing" Version="1.1.1" />
+    <PackageReference Include="Callcredit.RESTful.DataAssets" Version="9.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+  </ItemGroup>
+</Project>

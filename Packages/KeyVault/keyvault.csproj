@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
+    <AssemblyName>Callcredit.KeyVault</AssemblyName>
+    <RootNamespace>Callcredit.KeyVault</RootNamespace>
+    <Company>Callcredit</Company>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <!-- Commented out as powershell replacement token causes errors in loading project file in visual studio -->
+    <!-- Used by build process to version NuGet packages-->
+    <!--<PackageVersion>$version$</PackageVersion>-->
+    <title>Callcredit.KeyVault</title>
+    <authors>Callcredit</authors>
+    <owners>Callcredit</owners>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageIconUrl>\\cig.local\data\Callcredit Development\Private\Icons\icon50.png</PackageIconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <Description>This package provides a reusable implementation of the Repository pattern for a Key Vault Client, along with any needed parts - such as configuration models which can store the Client Id and Secret.</Description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <Copyright>
+      Copyright Callcredit 2018. All rights reserved.
+      Title, copyright and all other intellectual property in all and every part of this work belong to Callcredit and its licensors (if any).
+      This work is confidential and the recipient must not make any copies of the whole or any part of this work, nor make the same available
+      to any third party without the prior written consent of Callcredit.
+    </Copyright>
+    <PackageTags>CallCredit KeyVault SaasFramework</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CodeAnalysisRuleSet>..\StyleCop\StyleCop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\StyleCop\StyleCop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NuGetVersioning.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.KeyVault" Version="2.3.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.2" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.17.2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+    <PackageReference Include="Validation" Version="2.4.18" />
+  </ItemGroup>
+</Project>
