@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
+    <AssemblyName>Callcredit.AspNetCore.Authorization</AssemblyName>
+    <RootNamespace>Callcredit.AspNetCore.Authorization</RootNamespace>
+    <Company>Callcredit</Company>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <!-- Commented out as powershell replacement token causes errors in loading project file in visual studio -->
+    <!-- Used by build process to version NuGet packages-->
+    <!--<PackageVersion>$version$</PackageVersion>-->
+    <title>Callcredit.AspNetCore.Authorization</title>
+    <authors>Callcredit</authors>
+    <owners>Callcredit</owners>
+    <PackageProjectUrl>http://tfs:8080/tfs/ISD/SaaSFramework-Packages/_welcome?name=AspNetCore.Authorization&amp;repositoryType=1&amp;path=%2FREADME.md&amp;_a=view</PackageProjectUrl>
+    <PackageIconUrl>\\cig.local\data\Callcredit Development\Private\Icons\icon50.png</PackageIconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <Description>Provides ASP.NET Core middleware for validating JWT access tokens and an AuthorizationHandler to filter controller classes and methods by Scope.</Description>
+    <releaseNotes></releaseNotes>
+    <Copyright>
+      Copyright © Callcredit 2018. All rights reserved.
+      Title, copyright and all other intellectual property in all and every part of this work belong to Callcredit and its licensors (if any).
+      This work is confidential and the recipient must not make any copies of the whole or any part of this work, nor make the same available
+      to any third party without the prior written consent of Callcredit.
+    </Copyright>
+    <PackageTags>CallCredit AspNetCore.Authorization SaasFramework</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CodeAnalysisRuleSet>..\StyleCop\StyleCop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\StyleCop\StyleCop.json" />
+    <None Include="NuGetVersioning.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="1.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="1.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="1.1.2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+    <PackageReference Include="Validation" Version="2.4.18" />
+  </ItemGroup>
+</Project>
