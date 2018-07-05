@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
+    <AssemblyName>Callcredit.EntityFramework.Secrets.KeyVault</AssemblyName>
+    <RootNamespace>Callcredit.EntityFramework.Secrets.KeyVault</RootNamespace>
+    <Company>Callcredit</Company>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <!-- Commented out as powershell replacement token causes errors in loading project file in visual studio -->
+    <!-- Used by build process to version NuGet packages-->
+    <!--<PackageVersion>$version$</PackageVersion>-->
+    <title>Callcredit.EntityFramework.Secrets.KeyVault</title>
+    <authors>Callcredit</authors>
+    <owners>Callcredit</owners>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageIconUrl>\\cig.local\data\Callcredit Development\Private\Icons\icon50.png</PackageIconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <Description>Provides a mechanism for setting up service injections based on provided database context type. This package receives required connection string from azure keyvault and contains logic, which updates the string if the connection to the database starts failing.</Description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <Copyright>
+      Copyright © Callcredit 2017. All rights reserved.
+      Title, copyright and all other intellectual property in all and every part of this work belong to Callcredit and its licensors (if any).
+      This work is confidential and the recipient must not make any copies of the whole or any part of this work, nor make the same available
+      to any third party without the prior written consent of Callcredit.
+    </Copyright>
+    <PackageTags>CallCredit EntityFramework.Secrets.KeyVault SaasFramework</PackageTags>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <DocumentationFile>bin\Debug\Callcredit.EntityFramework.Secrets.KeyVault.xml</DocumentationFile>
+    <LangVersion>default</LangVersion>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>StyleCop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="NuGetVersioning.ps1" />
+  </ItemGroup>
+    <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+    <AdditionalFiles Include="StyleCop.ruleset" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Callcredit.KeyVault" Version="1.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+    <PackageReference Include="Validation" Version="2.4.18" />
+  </ItemGroup>
+</Project>
