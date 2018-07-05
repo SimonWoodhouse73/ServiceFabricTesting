@@ -25,4 +25,28 @@ namespace Callcredit.AspNetCore.Authorization
             Scope = scope;
         }
     }
+    
+    /// <summary>
+    /// A model to store the <see cref="Scope"/> objects as raw strings which can then be handled by the <see cref="ScopesHandler"/> class.
+    /// Implements <see cref="IAuthorizationRequirement" />
+    /// </summary>
+    public class ScopeRequirements : IAuthorizationRequirement
+    {
+        /// <summary>
+        /// Gets the scope objects as raw strings.
+        /// </summary>
+        /// <value>
+        /// The string array of required scopes for validation.
+        /// </value>
+        public string[] Scopes { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScopeRequirements"/> class with the required scope.
+        /// </summary>
+        /// <param name="scopes">The required scopes for validation.</param>
+        public ScopeRequirements(string[] scopes)
+        {
+            Scopes = scopes;
+        }
+    }
 }
