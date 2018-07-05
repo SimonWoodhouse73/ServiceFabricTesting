@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
+    <PackageIconUrl>\\cig.local\data\Callcredit Development\Private\Icons\icon50.png</PackageIconUrl>
+    <AssemblyVersion>0.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.1</FileVersion>
+    <Company>Callcredit</Company>
+    <Authors>Callcredit</Authors>
+    <Description>Token generation and validation API</Description>
+    <!--<Version>$version$</Version>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.1" />
+    <PackageReference Include="Validation" Version="2.4.18" />
+  </ItemGroup>
+
+</Project>
