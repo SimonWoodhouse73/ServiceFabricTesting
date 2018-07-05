@@ -1,4 +1,5 @@
 using Callcredit.RESTful.Services.Endpoints;
+using System.Collections.Generic;
 
 namespace Callcredit.AspNetCore.RESTful.Services.Endpoints
 {
@@ -9,3 +10,8 @@ namespace Callcredit.AspNetCore.RESTful.Services.Endpoints
         public EndpointConfiguration EndpointConfiguration { get; set; }
     }
 }
+
+public class RouteEndpointConfigurations : List<RouteEndpointConfiguration>
+{
+}
+
